@@ -1286,7 +1286,12 @@ public class GLFW
     }
     public static void glfwDestroyCursor(@NativeType("GLFWcursor *") long cursor) {}
     public static void glfwSetCursor(@NativeType("GLFWwindow *") long window, @NativeType("GLFWcursor *") long cursor) {
-        CallbackBridge.setCursorShape((int) cursor);
+        try {
+            Class<?> surface = Class.forName("net.kdt.pojavlaunch.MinecraftGLSurface");
+            surface.getMethod("setGameCursorShape", int.class).invoke(null, (int) cursor);
+        } catch (ReflectiveOperationException ignored) {
+            // The Android surface may not be attached yet; the next cursor update will retry.
+        }
     }
 
     public static boolean glfwRawMouseMotionSupported() {
