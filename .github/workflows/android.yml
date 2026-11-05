@@ -41,6 +41,26 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Build upstream LTW native renderer
+        run: |
+          set -e
+          git clone --depth 1 https://github.com/MojoLauncher/LTW.git /tmp/ltw
+          sed -i "s/version '7.4.1'/version '8.2.2'/" /tmp/ltw/build.gradle
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager "ndk;28.2.13676358"
+          chmod +x /tmp/ltw/gradlew
+          cd /tmp/ltw
+          ./gradlew :ltw:assembleRelease --no-daemon
+          mkdir -p "$GITHUB_WORKSPACE/ZalithLauncher/src/main/jniLibs"
+          cd "$GITHUB_WORKSPACE"
+          unzip -o /tmp/ltw/ltw/build/outputs/aar/ltw-release.aar 'jni/*/*.so' -d /tmp/ltw-aar
+          for abi_dir in /tmp/ltw-aar/jni/*; do
+            [ -d "$abi_dir" ] || continue
+            abi="$(basename "$abi_dir")"
+            mkdir -p "ZalithLauncher/src/main/jniLibs/$abi"
+            cp "$abi_dir"/*.so "ZalithLauncher/src/main/jniLibs/$abi/"
+          done
+
       - name: Build JRE JAR files
         run: |
           chmod +x gradlew
