@@ -12,6 +12,8 @@ import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
+import android.os.Build;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -94,6 +96,27 @@ public class MinecraftGLSurface extends View implements GrabListener {
     public MinecraftGLSurface(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         setFocusable(true);
+        CallbackBridge.attachCursorSurface(this);
+    }
+
+    /**
+     * Apply GLFW's standard cursor shape to Android's hardware mouse pointer.
+     * This affects physical mouse hover; touch controls keep their existing behavior.
+     */
+    public void setGameCursorShape(int glfwShape) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
+        final int pointerType;
+        switch (glfwShape) {
+            case 0x00036002: pointerType = PointerIcon.TYPE_TEXT; break; // I-beam
+            case 0x00036003: pointerType = PointerIcon.TYPE_CROSSHAIR; break;
+            case 0x00036004: pointerType = PointerIcon.TYPE_HAND; break;
+            case 0x00036005: pointerType = PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW; break;
+            case 0x00036006: pointerType = PointerIcon.TYPE_VERTICAL_DOUBLE_ARROW; break;
+            case 0x00036009: pointerType = PointerIcon.TYPE_ALL_SCROLL; break;
+            case 0x0003600A: pointerType = PointerIcon.TYPE_NO_DROP; break;
+            default: pointerType = PointerIcon.TYPE_ARROW; break;
+        }
+        post(() -> setPointerIcon(PointerIcon.getSystemIcon(getContext(), pointerType)));
     }
 
     private void setUpPointerCapture(AbstractTouchpad touchpad) {
