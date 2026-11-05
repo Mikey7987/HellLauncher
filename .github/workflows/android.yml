@@ -41,13 +41,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Build upstream LTW native renderer
         run: |
           set -e
           git clone --depth 1 https://github.com/MojoLauncher/LTW.git /tmp/ltw
           sed -i "s/version '7.4.1'/version '8.2.2'/" /tmp/ltw/build.gradle
           yes | sdkmanager --licenses >/dev/null
-          sdkmanager "ndk;28.2.13676358"
+          sdkmanager "ndk;28.2.13676358" "cmake;3.22.1"
           chmod +x /tmp/ltw/gradlew
           cd /tmp/ltw
           ./gradlew :ltw:assembleRelease --no-daemon
