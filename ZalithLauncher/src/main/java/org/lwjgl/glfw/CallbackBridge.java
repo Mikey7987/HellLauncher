@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 import net.kdt.pojavlaunch.GrabListener;
 import net.kdt.pojavlaunch.LwjglGlfwKeycode;
 import net.kdt.pojavlaunch.MainActivity;
+import net.kdt.pojavlaunch.MinecraftGLSurface;
+
+import java.lang.ref.WeakReference;
 
 import java.util.ArrayList;
 
@@ -19,6 +22,16 @@ public class CallbackBridge {
     public static final Choreographer sChoreographer = Choreographer.getInstance();
     private static boolean isGrabbing = false;
     private static final ArrayList<GrabListener> grabListeners = new ArrayList<>();
+    private static volatile WeakReference<MinecraftGLSurface> cursorSurface = new WeakReference<>(null);
+
+    public static void attachCursorSurface(MinecraftGLSurface surface) {
+        cursorSurface = new WeakReference<>(surface);
+    }
+
+    public static void setCursorShape(int glfwShape) {
+        MinecraftGLSurface surface = cursorSurface.get();
+        if (surface != null) surface.setGameCursorShape(glfwShape);
+    }
     
     public static final int CLIPBOARD_COPY = 2000;
     public static final int CLIPBOARD_PASTE = 2001;
