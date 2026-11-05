@@ -1065,6 +1065,10 @@ public class GLFW
             glMajor = 4;
             glMinor = 0;
         }
+        else if (System.getenv("POJAV_RENDERER").equals("opengles3_ltw")) {
+            glMajor = 3;
+            glMinor = 2;
+        }
         win.windowAttribs.put(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
         win.windowAttribs.put(GLFW_CONTEXT_VERSION_MINOR, glMinor);
 
