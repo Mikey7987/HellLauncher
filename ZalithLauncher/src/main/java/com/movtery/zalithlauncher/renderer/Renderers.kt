@@ -3,6 +3,7 @@ package com.movtery.zalithlauncher.renderer
 import android.content.Context
 import com.movtery.zalithlauncher.feature.log.Logging
 import com.movtery.zalithlauncher.renderer.renderers.FreedrenoRenderer
+import com.movtery.zalithlauncher.renderer.renderers.LTWRenderer
 import com.movtery.zalithlauncher.renderer.renderers.GL4ESRenderer
 import com.movtery.zalithlauncher.renderer.renderers.PanfrostRenderer
 import com.movtery.zalithlauncher.renderer.renderers.VirGLRenderer
@@ -31,6 +32,7 @@ object Renderers {
 
         addRenderers(
             GL4ESRenderer(),
+            LTWRenderer(),
             VulkanZinkRenderer(),
             VirGLRenderer(),
             FreedrenoRenderer(),

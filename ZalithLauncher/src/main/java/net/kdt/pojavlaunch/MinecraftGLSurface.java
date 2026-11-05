@@ -12,6 +12,8 @@ import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
+import android.os.Build;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -42,6 +44,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.lwjgl.glfw.CallbackBridge;
 
 import java.util.Locale;
+import java.lang.ref.WeakReference;
 
 import fr.spse.gamepad_remapper.RemapperManager;
 import fr.spse.gamepad_remapper.RemapperView;
@@ -51,6 +54,8 @@ import fr.spse.gamepad_remapper.RemapperView;
  */
 public class MinecraftGLSurface extends View implements GrabListener {
     /* Gamepad object for gamepad inputs, instantiated on need */
+    private static volatile WeakReference<MinecraftGLSurface> cursorSurface = new WeakReference<>(null);
+
     private Gamepad mGamepad = null;
     /* The RemapperView.Builder object allows you to set which buttons to remap */
     private final RemapperManager mInputManager = new RemapperManager(getContext(), new RemapperView.Builder(null)
@@ -94,6 +99,32 @@ public class MinecraftGLSurface extends View implements GrabListener {
     public MinecraftGLSurface(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         setFocusable(true);
+        cursorSurface = new WeakReference<>(this);
+    }
+
+    /**
+     * Apply GLFW's standard cursor shape to Android's hardware mouse pointer.
+     * This affects physical mouse hover; touch controls keep their existing behavior.
+     */
+    public static void setGameCursorShape(int glfwShape) {
+        MinecraftGLSurface surface = cursorSurface.get();
+        if (surface != null) surface.applyGameCursorShape(glfwShape);
+    }
+
+    private void applyGameCursorShape(int glfwShape) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
+        final int pointerType;
+        switch (glfwShape) {
+            case 0x00036002: pointerType = PointerIcon.TYPE_TEXT; break; // I-beam
+            case 0x00036003: pointerType = PointerIcon.TYPE_CROSSHAIR; break;
+            case 0x00036004: pointerType = PointerIcon.TYPE_HAND; break;
+            case 0x00036005: pointerType = PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW; break;
+            case 0x00036006: pointerType = PointerIcon.TYPE_VERTICAL_DOUBLE_ARROW; break;
+            case 0x00036009: pointerType = PointerIcon.TYPE_ALL_SCROLL; break;
+            case 0x0003600A: pointerType = PointerIcon.TYPE_NO_DROP; break;
+            default: pointerType = PointerIcon.TYPE_ARROW; break;
+        }
+        post(() -> setPointerIcon(PointerIcon.getSystemIcon(getContext(), pointerType)));
     }
 
     private void setUpPointerCapture(AbstractTouchpad touchpad) {

@@ -41,6 +41,31 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Build upstream LTW native renderer
+        run: |
+          set -e
+          git clone --depth 1 https://github.com/MojoLauncher/LTW.git /tmp/ltw
+          sed -i "s/version '7.4.1'/version '8.2.2'/" /tmp/ltw/build.gradle
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "ndk;28.2.13676358" "cmake;3.22.1"
+          chmod +x /tmp/ltw/gradlew
+          cd /tmp/ltw
+          ./gradlew :ltw:assembleRelease --no-daemon
+          mkdir -p "$GITHUB_WORKSPACE/ZalithLauncher/src/main/jniLibs"
+          cd "$GITHUB_WORKSPACE"
+          unzip -o /tmp/ltw/ltw/build/outputs/aar/ltw-release.aar 'jni/*/*.so' -d /tmp/ltw-aar
+          for abi_dir in /tmp/ltw-aar/jni/*; do
+            [ -d "$abi_dir" ] || continue
+            abi="$(basename "$abi_dir")"
+            mkdir -p "ZalithLauncher/src/main/jniLibs/$abi"
+            cp "$abi_dir"/*.so "ZalithLauncher/src/main/jniLibs/$abi/"
+          done
+
       - name: Build JRE JAR files
         run: |
           chmod +x gradlew
@@ -79,6 +104,31 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Build upstream LTW native renderer
+        run: |
+          set -e
+          git clone --depth 1 https://github.com/MojoLauncher/LTW.git /tmp/ltw
+          sed -i "s/version '7.4.1'/version '8.2.2'/" /tmp/ltw/build.gradle
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "ndk;28.2.13676358" "cmake;3.22.1"
+          chmod +x /tmp/ltw/gradlew
+          cd /tmp/ltw
+          ./gradlew :ltw:assembleRelease --no-daemon
+          mkdir -p "$GITHUB_WORKSPACE/ZalithLauncher/src/main/jniLibs"
+          cd "$GITHUB_WORKSPACE"
+          unzip -o /tmp/ltw/ltw/build/outputs/aar/ltw-release.aar 'jni/*/*.so' -d /tmp/ltw-aar
+          for abi_dir in /tmp/ltw-aar/jni/*; do
+            [ -d "$abi_dir" ] || continue
+            abi="$(basename "$abi_dir")"
+            mkdir -p "ZalithLauncher/src/main/jniLibs/$abi"
+            cp "$abi_dir"/*.so "ZalithLauncher/src/main/jniLibs/$abi/"
+          done
+
       - name: Build JRE JAR files
         run: |
           chmod +x gradlew
@@ -93,5 +143,5 @@ jobs:
       - name: Upload Debug ${{matrix.arch}}
         uses: actions/upload-artifact@v4
         with:
-          name: ZalithLauncher(Debug) ${{ matrix.arch }}
+          name: HellLauncher-Debug-${{matrix.arch}}
           path: ZalithLauncher/build/outputs/apk/debug/*

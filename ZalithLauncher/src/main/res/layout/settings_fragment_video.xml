@@ -13,6 +13,35 @@
         android:paddingVertical="@dimen/_12sdp">
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_12sdp"
+            android:background="@drawable/background_card"
+            android:orientation="vertical"
+            android:padding="@dimen/_12sdp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_performance_profile_title"
+                android:textColor="@color/black_or_white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/setting_performance_profile_desc" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/performance_profile_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:text="@string/setting_performance_profile_apply" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/video_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1065,6 +1065,10 @@ public class GLFW
             glMajor = 4;
             glMinor = 0;
         }
+        else if (System.getenv("POJAV_RENDERER").equals("opengles3_ltw")) {
+            glMajor = 3;
+            glMinor = 2;
+        }
         win.windowAttribs.put(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
         win.windowAttribs.put(GLFW_CONTEXT_VERSION_MINOR, glMinor);
 
@@ -1261,13 +1265,34 @@ public class GLFW
     }*/
 
     public static long glfwCreateCursor(@NativeType("const GLFWimage *") GLFWImage image, int xhot, int yhot) {
-        return 4L;
+        // Custom bitmap cursors are not exposed by Android's system pointer API.
+        // Fall back to the standard arrow rather than returning an invalid handle.
+        return GLFW_ARROW_CURSOR;
     }
     public static long glfwCreateStandardCursor(int shape) {
-        return 4L;
+        switch (shape) {
+            case GLFW_ARROW_CURSOR:
+            case GLFW_IBEAM_CURSOR:
+            case GLFW_CROSSHAIR_CURSOR:
+            case GLFW_HAND_CURSOR:
+            case GLFW_HRESIZE_CURSOR:
+            case GLFW_VRESIZE_CURSOR:
+            case GLFW_RESIZE_ALL_CURSOR:
+            case GLFW_NOT_ALLOWED_CURSOR:
+                return shape;
+            default:
+                return GLFW_ARROW_CURSOR;
+        }
     }
     public static void glfwDestroyCursor(@NativeType("GLFWcursor *") long cursor) {}
-    public static void glfwSetCursor(@NativeType("GLFWwindow *") long window, @NativeType("GLFWcursor *") long cursor) {}
+    public static void glfwSetCursor(@NativeType("GLFWwindow *") long window, @NativeType("GLFWcursor *") long cursor) {
+        try {
+            Class<?> surface = Class.forName("net.kdt.pojavlaunch.MinecraftGLSurface");
+            surface.getMethod("setGameCursorShape", int.class).invoke(null, (int) cursor);
+        } catch (ReflectiveOperationException ignored) {
+            // The Android surface may not be attached yet; the next cursor update will retry.
+        }
+    }
 
     public static boolean glfwRawMouseMotionSupported() {
         // Should be not supported?

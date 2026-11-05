@@ -233,6 +233,19 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             }
         }
 
+        binding.performanceProfileButton.setOnClickListener {
+            AllSettings.resolutionRatio.put(85).save()
+            AllSettings.sustainedPerformance.put(true).save()
+            binding.resolutionRatio.progress = 85
+            binding.sustainedPerformance.isChecked = true
+            changeResolutionRatioPreview(85)
+            android.widget.Toast.makeText(
+                requireContext(),
+                R.string.setting_performance_profile_applied,
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+
         changeResolutionRatioPreview(AllSettings.resolutionRatio.getValue())
         computeVisibility()
     }

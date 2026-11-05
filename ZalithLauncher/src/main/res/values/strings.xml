@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="launcher_home_title">HellLauncher</string>
+    <string name="launcher_home_subtitle">Minecraft Java Edition, ready when you are.</string>
+    <string name="setting_performance_profile_title">Balanced performance</string>
+    <string name="setting_performance_profile_desc">Use a slightly lower render resolution and sustained-performance mode for steadier gameplay.</string>
+    <string name="setting_performance_profile_apply">Apply balanced profile</string>
+    <string name="setting_performance_profile_applied">Balanced profile saved. Restart Minecraft to apply it.</string>
     <!-- Zalith Launcher -->
     <string name="generic_open">Open</string>
     <string name="generic_close">Close</string>
